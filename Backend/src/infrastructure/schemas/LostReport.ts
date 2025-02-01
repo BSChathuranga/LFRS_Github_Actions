@@ -1,0 +1,108 @@
+import mongoose from "mongoose";
+import LostCounter from "./LostCounter";
+
+
+const generateReferenceNo = () => {
+    return `LR-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+};
+
+const LostReportSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    phoneNo: {
+        type: Number,
+        required: true
+    },
+    nic: {
+        type: String,
+        required: true
+    },
+    items: {
+        type: String,
+        required: true
+    },
+    category: {
+        type: [String],
+        required: true
+        //type: [mongoose.Schema.Types.ObjectId],
+        //ref: 'Category'
+    },
+    description: {
+        type: String
+    },
+    image: {
+        type: [String]
+    },
+    dateOfLost: {
+        type: Date,
+        required: true,
+        format: 'yyyy-MM-dd'
+    },
+    timeOfLost: {
+        type: String,
+        required: true,
+        format: 'HH:mm:ss'
+    },
+    location: {
+        type: String,
+        required: true
+    },
+    district: {
+        type: String,
+        required: true
+    },
+    nearestPoliceStation: {
+        type: String,
+        //type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    status: {
+        type: String,
+        enum: ['LOST', 'FOUND', 'IMFORMED', 'COLLECTED', 'REMOVED', 'NOT COLLECTED'],
+        default: 'LOST'
+    },
+    referanceNo: {
+        type: String,
+        require: true,
+        unique: true,
+        default: generateReferenceNo
+    },
+    createBy: {
+        type: String,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        format: 'HH:mm:ss'
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+        format: 'HH:mm:ss'
+    }
+
+})
+
+export default mongoose.model('LostReport', LostReportSchema)
+
+
+
+/*LostReportSchema.pre('save', async function (next) {
+    const report = this;
+    try {
+        if (report.isNew) {
+            const counter = await LostCounter.findByIdAndUpdate(
+                'lost_report_counter',
+                { $inc: { seq: 1 } },
+                { new: true, upsert: true }
+            )
+            report.referanceNo = `LRSL-${counter.seq}`;
+        }
+        next();
+    } catch (error) {
+        console.log(error);
+    }
+})
+*/
